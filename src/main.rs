@@ -1,5 +1,6 @@
 #![allow(unused_variables)]
 #![allow(dead_code)]
+#![windows_subsystem = "windows"]
 
 use ::rand::prelude::*;
 use macroquad::prelude::*;
@@ -8,17 +9,17 @@ struct MainState {}
 
 struct Field {
     size: Vec2,
-    pills: Vec<Vec<Pill>>,
+    cells: Vec<Vec<Cell>>,
 }
 
 #[derive(Clone)]
-struct Pill {
+struct Cell {
     alive: bool,
 }
 
-impl Pill {
-    pub fn new() -> Pill {
-        Pill { alive: false }
+impl Cell {
+    pub fn new() -> Cell {
+        Cell { alive: false }
     }
 
     pub fn update(&mut self, alive: bool) {
@@ -28,7 +29,7 @@ impl Pill {
 
 fn window_conf() -> Conf {
     Conf {
-        window_title: "pills".to_owned(),
+        window_title: "cells".to_owned(),
         window_width: 800,
         window_height: 800,
         ..Default::default()
@@ -45,21 +46,21 @@ async fn main() {
     let mut rng = thread_rng();
 
     const SIZE: Vec2 = Vec2 { x: 100., y: 100. };
-    let mut pill_vec = Vec::with_capacity(SIZE.x as usize);
+    let mut cell_vec = Vec::with_capacity(SIZE.x as usize);
     for x in 0..(SIZE.x as i32) {
-        pill_vec.push(Vec::with_capacity(SIZE.y as usize));
+        cell_vec.push(Vec::with_capacity(SIZE.y as usize));
     }
     for x in 0..(SIZE.x as i32) {
         for y in 0..(SIZE.y as i32) {
-            let mut new_pill = Pill::new();
-            new_pill.alive = rng.gen_bool(0.5);
-            pill_vec[x as usize].push(new_pill);
+            let mut new_cell = Cell::new();
+            new_cell.alive = rng.gen_bool(0.5);
+            cell_vec[x as usize].push(new_cell);
         }
     }
 
     let mut field = Field {
         size: Vec2 { x: 100., y: 100. },
-        pills: pill_vec,
+        cells: cell_vec,
     };
 
     // GameLoop
@@ -67,10 +68,10 @@ async fn main() {
         clear_background(BLACK);
 
         let mut x_pos = 0;
-        let im_pills = field.pills.to_vec();
-        for arr in &mut field.pills {
+        let im_cells = field.cells.to_vec();
+        for arr in &mut field.cells {
             let mut y_pos = 0;
-            for pill in arr {
+            for cell in arr {
                 let mut alive_count: i8 = 0;
                 for x_n in -1..=1 as i32 {
                     for y_n in -1..=1 as i32 {
@@ -83,21 +84,21 @@ async fn main() {
                                 x: x_pos as f32,
                                 y: y_pos as f32,
                             })
-                            && im_pills[(x_pos + x_n) as usize][(y_pos + y_n) as usize].alive
+                            && im_cells[(x_pos + x_n) as usize][(y_pos + y_n) as usize].alive
                         {
                             alive_count += 1;
                         }
                     }
                 }
 
-                if pill.alive {
+                if cell.alive {
                     if alive_count > 1 && alive_count < 4 {
-                        pill.update(true);
+                        cell.update(true);
                     } else {
-                        pill.update(false);
+                        cell.update(false);
                     }
                 } else if alive_count == 3 {
-                    pill.update(true);
+                    cell.update(true);
                 }
 
                 let real_pos = Vec2 {
@@ -109,7 +110,7 @@ async fn main() {
                     y: mouse_position().1,
                 };
                 if is_mouse_button_down(MouseButton::Left) && real_pos.distance(mouse_pos) < 32. {
-                    pill.update(rng.gen_bool(0.5));
+                    cell.update(rng.gen_bool(0.5));
                 }
 
                 draw_rectangle(
@@ -117,7 +118,7 @@ async fn main() {
                     y_pos as f32 * 8.,
                     8.,
                     8.,
-                    if pill.alive { WHITE } else { BLACK },
+                    if cell.alive { WHITE } else { BLACK },
                 );
                 y_pos += 1;
             }
