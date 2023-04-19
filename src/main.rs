@@ -1,5 +1,3 @@
-#![allow(unused_variables)]
-#![allow(dead_code)]
 #![windows_subsystem = "windows"]
 
 use ::rand::prelude::*;
@@ -8,7 +6,6 @@ use macroquad::prelude::*;
 struct MainState {}
 
 struct Field {
-    size: Vec2,
     cells: Vec<Vec<Cell>>,
 }
 
