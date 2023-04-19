@@ -3,8 +3,6 @@
 use ::rand::prelude::*;
 use macroquad::prelude::*;
 
-struct MainState {}
-
 struct Field {
     cells: Vec<Vec<Cell>>,
 }
@@ -37,28 +35,22 @@ fn window_conf() -> Conf {
 async fn main() {
     std::env::set_var("RUST_BACKTRACE", "full");
 
-    macroquad::window::screen_height();
-
-    let state = MainState {};
     let mut rng = thread_rng();
 
     const SIZE: Vec2 = Vec2 { x: 100., y: 100. };
     let mut cell_vec = Vec::with_capacity(SIZE.x as usize);
-    for x in 0..(SIZE.x as i32) {
+    for _x in 0..(SIZE.x as i32) {
         cell_vec.push(Vec::with_capacity(SIZE.y as usize));
     }
     for x in 0..(SIZE.x as i32) {
-        for y in 0..(SIZE.y as i32) {
+        for _y in 0..(SIZE.y as i32) {
             let mut new_cell = Cell::new();
             new_cell.alive = rng.gen_bool(0.5);
             cell_vec[x as usize].push(new_cell);
         }
     }
 
-    let mut field = Field {
-        size: Vec2 { x: 100., y: 100. },
-        cells: cell_vec,
-    };
+    let mut field = Field { cells: cell_vec };
 
     // GameLoop
     loop {
