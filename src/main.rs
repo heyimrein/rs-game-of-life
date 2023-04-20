@@ -129,7 +129,11 @@ async fn main() {
 
         // Show frametime for optimization benchmark
         draw_text(
-            format!("FrameTime: {}ms", frametime.elapsed().unwrap().as_millis()).as_str(), // Holy method chain, I love Rust
+            format!(
+                "FrameTime: {}ms",
+                frametime.elapsed().unwrap().as_secs_f32() * 1000.
+            )
+            .as_str(), // Holy method chain, I love Rust
             5.,
             20.,
             20.,
