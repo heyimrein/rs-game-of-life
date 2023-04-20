@@ -35,7 +35,8 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    std::env::set_var("RUST_BACKTRACE", "full");
+    // Un-comment for detailed tracing data at runtime
+    // std::env::set_var("RUST_BACKTRACE", "full");
 
     let mut rng = thread_rng();
 
