@@ -134,7 +134,7 @@ async fn main() {
                 "FrameTime: {}ms",
                 frametime.elapsed().unwrap().as_secs_f32() * 1000.
             )
-            .as_str(), // Holy method chain, I love Rust
+            .as_str(),
             5.,
             20.,
             20.,
