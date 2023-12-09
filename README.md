@@ -1,6 +1,6 @@
 # rs-game-of-life
 Conway's Game of Life in Rust using Macroquad
-- Code formatted for Windows only, feel free to make it more compatible 👍
+- Colorful!!
 
 ## Usage
 1. Clone/Fork the repository
