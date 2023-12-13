@@ -1,4 +1,4 @@
-#![windows_subsystem = "windows"]
+
 
 use ::rand::prelude::*;
 use macroquad::prelude::*;
@@ -10,16 +10,25 @@ struct Field {
 #[derive(Clone)]
 struct Cell {
     alive: bool,
+    age: usize,//coloring based in the age of the cell.
 }
 
 impl Cell {
     pub fn new() -> Cell {
-        Cell { alive: false }
+        Cell {   
+            alive: false,
+            age: 0 
+        }
     }
 
     /// Update Cell living state, setting it to `alive`
     pub fn update(&mut self, alive: bool) {
         self.alive = alive;
+        if alive { 
+            self.age += 1;
+        } else {
+            self.age = 0;
+        }
     }
 }
 
@@ -33,6 +42,9 @@ fn window_conf() -> Conf {
     }
 }
 
+//stores the coords(X, Y).
+struct DIMEN(usize, usize);
+
 #[macroquad::main(window_conf)]
 async fn main() {
     // Un-comment for detailed tracing data at runtime
@@ -41,20 +53,26 @@ async fn main() {
     let mut rng = thread_rng();
 
     // Initialize the Cell vector
-    const SIZE: Vec2 = Vec2 { x: 100., y: 100. };
-    let mut cell_vec = Vec::with_capacity(SIZE.x as usize);
-    for _x in 0..(SIZE.x as i32) {
-        cell_vec.push(Vec::with_capacity(SIZE.y as usize));
-    }
-    for x in 0..(SIZE.x as i32) {
-        for _y in 0..(SIZE.y as i32) {
-            let mut new_cell = Cell::new();
-            new_cell.alive = rng.gen_bool(0.5);
-            cell_vec[x as usize].push(new_cell);
+    const SIZE : DIMEN = DIMEN(100 , 100);
+    let mut cell_vec = vec![vec![Cell::new(); SIZE.1 as usize]; SIZE.0 as usize];
+    //generating a random initial state.
+    let mut state: bool;
+    for x in 0..(SIZE.0) {
+        for _y in 0..(SIZE.1) {
+            state = rng.gen_bool(0.5);
+            cell_vec[x][_y].alive = state;
+            cell_vec[x][_y].update(state);
         }
     }
 
     let mut field = Field { cells: cell_vec };
+
+    let mut cell_color: Color = Color::new(
+        1.0,
+        0.0,
+        0.0,
+        1.0
+    );
 
     // Game Loop
     loop {
@@ -110,14 +128,17 @@ async fn main() {
                         y: mouse_position().1,
                     };
 
-                    if real_pos.distance(mouse_pos) < 32. {
+                    if real_pos.distance(mouse_pos) < 64. {
                         cell.update(rng.gen_bool(0.5));
                     }
                 }
 
                 // Render Cell if alive
                 if cell.alive {
-                    draw_rectangle(x_pos as f32 * 8., y_pos as f32 * 8., 8., 8., WHITE);
+                    cell_color.g = cell.age as f32/4.;
+                    cell_color.b += cell.age as f32*0.005;
+                    draw_rectangle(x_pos as f32 * 8., y_pos as f32 * 8., 8., 8., cell_color);
+                    cell_color.g = 0.;cell_color.b = 0.;
                 }
                 y_pos += 1;
             }
